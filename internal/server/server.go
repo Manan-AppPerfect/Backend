@@ -21,7 +21,9 @@ func NewHTTPServer(p Params) {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/create-team", func(w http.ResponseWriter, r *http.Request) {
-		fcBarcelona, err := p.Service.CreateTeam("1", "FC Barcelona", 126)
+
+		ctx := r.Context()
+		fcBarcelona, err := p.Service.CreateTeam(ctx, 1, "FC Barcelona", 126)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return 

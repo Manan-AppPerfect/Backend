@@ -3,23 +3,24 @@ package service
 // Service is the file where you provide Services like CRUD
 
 import (
+	"context"
 	"errors"
 
+	"github.com/Manan-AppPerfect/Backend/internal/common/repository"
 	"github.com/Manan-AppPerfect/Backend/internal/team/models"
-	"github.com/Manan-AppPerfect/Backend/internal/team/repository"
 )
 
 type Service struct {
-	repo *repository.Repo
+	repo repository.Repository[models.Team]
 }
 
-func NewService(r *repository.Repo) *Service {
+func NewService(r repository.Repository[models.Team]) *Service {
 	return &Service{
 		repo: r,
 	}
 }
 
-func (s *Service) CreateTeam(id, name string, age int) (*models.Team, error){
+func (s *Service) CreateTeam(ctx context.Context, id int64, name string, age int) (*models.Team, error){
 
 	if name == "" {
 		return nil, errors.New("Team name required")
@@ -35,24 +36,26 @@ func (s *Service) CreateTeam(id, name string, age int) (*models.Team, error){
 		Age: age,
 	}
 
-	s.repo.Save(team)
+	if err := s.repo.Create(ctx, team); err != nil{
+		return nil, err
+	}
 	
 	return team, nil
 }
 
-func (s *Service) AddPlayers(id string, count int) error {
-	team := s.repo.Get(id)
-	if team == nil {
-		return errors.New("Team not found")
+func (s *Service) AddPlayers(ctx context.Context, id int64, count int) error {
+	team, err := s.repo.GetByID(ctx, id)
+	if err == nil {
+		return err
 	}
 	
 	return team.AddPlayerCount(count)
 }
 
-func (s *Service) AddPoints(id string, count int) error {
-	team := s.repo.Get(id)
-	if team == nil {
-		return errors.New("Team not found")
+func (s *Service) AddPoints(ctx context.Context, id int64, count int) error {
+	team, err := s.repo.GetByID(ctx, id)
+	if err == nil {
+		return err
 	}
 	
 	return team.AddPoints(count)

@@ -5,7 +5,7 @@ import "errors"
 // model.go defines the bluePrint for the data
 
 type Team struct {
-	ID 			string
+	ID 			int64
 	Name 		string
 	Age 		int
 	PlayerCount int
