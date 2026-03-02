@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Manan-AppPerfect/Backend/internal/team/service"
+	"github.com/Manan-AppPerfect/Backend/internal/api/generated"
+	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 )
 
@@ -13,23 +14,14 @@ type Params struct {
 	fx.In
 	
 	Lifecycle fx.Lifecycle
-	Service *service.Service
+	Handler api.ServerInterface
 }
 
 func NewHTTPServer(p Params) {
 
-	mux := http.NewServeMux()
+	mux := chi.NewRouter()
 
-	mux.HandleFunc("/create-team", func(w http.ResponseWriter, r *http.Request) {
-
-		ctx := r.Context()
-		fcBarcelona, err := p.Service.CreateTeam(ctx, 1, "FC Barcelona", 126)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return 
-		}
-		fmt.Fprintf(w, "Team created: %v\n", fcBarcelona)
-	})
+	api.HandlerFromMux(p.Handler, mux)
 
 	server := &http.Server{
 		Addr: ":8000",
@@ -40,7 +32,11 @@ func NewHTTPServer(p Params) {
 		OnStart: func(ctx context.Context) error {
 			fmt.Println("Starting server at 8000: ")
 
-			go server.ListenAndServe()
+			go func() {
+				if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+					fmt.Println("Server error:", err)
+				}
+			}()
 			
 			return nil
 		},

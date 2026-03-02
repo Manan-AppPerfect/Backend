@@ -1,0 +1,50 @@
+openapi: 3.0.0
+info: 
+  title: Backend
+  version: 1.0.0
+
+paths: 
+  /teams:
+    post:
+      summary: Create a team
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/CreateTeamRequest'
+
+      responses:
+        '200':
+          description: Team Created
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+
+components:
+  schemas:
+    CreateTeamRequest:
+      type: object
+      required: 
+        - name
+        - age
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
+
+    Team:
+      type: object
+      properties: 
+        id: 
+          type: integer
+        name: 
+          type: string
+        age: 
+          type: integer
+        playerCount:
+          type: integer
+        points:
+          type: integer

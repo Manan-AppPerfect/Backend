@@ -8,6 +8,9 @@ import (
 
 
 var ServerModule = fx.Options(
+	fx.Provide(
+		NewTeamHandler,
+	),
 	fx.Invoke(
 		NewHTTPServer,
 	),
