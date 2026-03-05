@@ -8,7 +8,7 @@ import (
 
 	"github.com/Manan-AppPerfect/Backend/internal/common/repository"
 	"github.com/Manan-AppPerfect/Backend/internal/gateway/user"
-	"github.com/Manan-AppPerfect/Backend/internal/team/models"
+	"github.com/Manan-AppPerfect/Backend/internal/models"
 )
 
 type Service struct {
