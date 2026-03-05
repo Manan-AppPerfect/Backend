@@ -19,13 +19,15 @@ func NewTeamHandler(s *service.Service) api.ServerInterface {
 }
 
 func (h *TeamHandler) PostTeams(w http.ResponseWriter, r *http.Request) {
+	
+	//Decode Request
 	var req api.CreateTeamRequest
-
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	// Call Service
 	team, err := h.service.CreateTeam(
 		r.Context(),
 		1, 
@@ -37,6 +39,7 @@ func (h *TeamHandler) PostTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Map domain -> Response 
 	resp := api.Team{
 		Id:          intPtr(int(team.ID)),
 		Name:        stringPtr(team.Name),
@@ -45,6 +48,7 @@ func (h *TeamHandler) PostTeams(w http.ResponseWriter, r *http.Request) {
 		Points:      intPtr(team.Points),
 	}
 
+	// Write Response
 	json.NewEncoder(w).Encode(resp)
 }
 

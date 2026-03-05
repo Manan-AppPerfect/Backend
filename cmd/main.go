@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Manan-AppPerfect/Backend/internal/gateway/user"
 	"github.com/Manan-AppPerfect/Backend/internal/server"
 	"github.com/Manan-AppPerfect/Backend/internal/team"
 	"go.uber.org/fx"
@@ -41,5 +42,6 @@ func main() {
 		// Trigger them
 		team.TeamModule,
 		server.ServerModule,
+		user.GatewayModule,
 	).Run()
 }
