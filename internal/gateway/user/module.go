@@ -4,7 +4,9 @@ import "go.uber.org/fx"
 
 var GatewayModule = fx.Options(
 	fx.Provide(
-		NewClient,
+		func() *Client {
+			return NewClient("http://localhost:9000")
+		},
 		NewGateway,
 	),
 )

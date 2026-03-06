@@ -7,28 +7,32 @@ import (
 	"errors"
 
 	"github.com/Manan-AppPerfect/Backend/internal/common/repository"
+	"github.com/Manan-AppPerfect/Backend/internal/gateway/slack"
 	"github.com/Manan-AppPerfect/Backend/internal/gateway/user"
 	"github.com/Manan-AppPerfect/Backend/internal/models"
 )
 
 type Service struct {
-	repo repository.Repository[models.Team]
-	userGateway user.Gateway
+	repo 			repository.Repository[models.Team]
+	userGateway 	user.Gateway
+	slackGateway	slack.Gateway
 }
 
 func NewService(
-	r repository.Repository[models.Team],
-	userGateway user.Gateway,
+	r 				repository.Repository[models.Team],
+	userGateway 	user.Gateway,
+	slackGateway	slack.Gateway,
 ) *Service {
 	return &Service{
 		repo: r,
 		userGateway: userGateway,
+		slackGateway: slackGateway,
 	}
 }
 
 func (s *Service) CreateTeam(ctx context.Context, name string, age, playerCount, points int) (*models.Team, error){
 
-	user, err := s.userGateway.GetUser(ctx, 2)
+	user, err := s.userGateway.GetUser(ctx, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +57,14 @@ func (s *Service) CreateTeam(ctx context.Context, name string, age, playerCount,
 	if err := s.repo.Create(ctx, team); err != nil{
 		return nil, err
 	}
-	
+
+	message := "New Team Created: " + team.Name
+
+	err = s.slackGateway.SendMessage(ctx, message)
+	if err != nil {
+		return nil, err 
+	}
+
 	return team, nil
 }
 
