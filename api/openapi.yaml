@@ -22,17 +22,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/Team'
 
+  /teams/{id}:
+    get:
+      summary: Get team by id
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+
+      responses:
+        '200':
+          description: Team found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+  
+  
+
+
+
 components:
   schemas:
     CreateTeamRequest:
       type: object
-      required: 
+      required:
+        - id
         - name
         - age
+        - playerCount
+        - points
       properties:
+        id:
+          type: integer
         name:
           type: string
         age:
+          type: integer
+        playerCount:
+          type: integer
+        points: 
           type: integer
 
     Team:

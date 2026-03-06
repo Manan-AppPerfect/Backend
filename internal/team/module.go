@@ -9,7 +9,7 @@ import (
 
 var TeamModule = fx.Options(
 	fx.Provide(
-		repository.NewMemoryRepository[models.Team],
+		repository.NewPostgresRepository[models.Team],
 		service.NewService,
 	),
 )

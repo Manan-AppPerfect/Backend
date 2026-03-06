@@ -8,12 +8,16 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/oapi-codegen/runtime"
 )
 
 // CreateTeamRequest defines model for CreateTeamRequest.
 type CreateTeamRequest struct {
-	Age  int    `json:"age"`
-	Name string `json:"name"`
+	Age         int    `json:"age"`
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	PlayerCount int    `json:"playerCount"`
+	Points      int    `json:"points"`
 }
 
 // Team defines model for Team.
@@ -33,6 +37,9 @@ type ServerInterface interface {
 	// Create a team
 	// (POST /teams)
 	PostTeams(w http.ResponseWriter, r *http.Request)
+	// Get team by id
+	// (GET /teams/{id})
+	GetTeamsId(w http.ResponseWriter, r *http.Request, id int)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -42,6 +49,12 @@ type Unimplemented struct{}
 // Create a team
 // (POST /teams)
 func (_ Unimplemented) PostTeams(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get team by id
+// (GET /teams/{id})
+func (_ Unimplemented) GetTeamsId(w http.ResponseWriter, r *http.Request, id int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -59,6 +72,31 @@ func (siw *ServerInterfaceWrapper) PostTeams(w http.ResponseWriter, r *http.Requ
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostTeams(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetTeamsId operation middleware
+func (siw *ServerInterfaceWrapper) GetTeamsId(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTeamsId(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -183,6 +221,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/teams", wrapper.PostTeams)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/teams/{id}", wrapper.GetTeamsId)
 	})
 
 	return r

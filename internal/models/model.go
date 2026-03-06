@@ -11,10 +11,10 @@ import (
 
 type Team struct {
 	ID 			int64	`gorm:"primaryKey"`
-	Name 		string	`gorm:"size:100;not null"`
+	Name 		string	`gorm:"size:100;not null;unique"`
 	Age 		int
 	PlayerCount int
-	Points 		int
+	Points 		int		`gorm:"default:0"`
 
 	CreatedAt	time.Time
 	UpdatedAt	time.Time

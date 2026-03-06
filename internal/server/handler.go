@@ -30,10 +30,12 @@ func (h *TeamHandler) PostTeams(w http.ResponseWriter, r *http.Request) {
 	// Call Service
 	team, err := h.service.CreateTeam(
 		r.Context(),
-		1, 
 		req.Name, 
 		req.Age,
+		req.PlayerCount,
+		req.Points,
 	)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -52,6 +54,25 @@ func (h *TeamHandler) PostTeams(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+
+func (h *TeamHandler) GetTeamsId(w http.ResponseWriter, r *http.Request, id int) {
+	
+	team, err := h.service.GetTeamByID(r.Context(), int64(id))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	resp := api.Team{
+		Id:          intPtr(int(team.ID)),
+		Name:        stringPtr(team.Name),
+		Age:         intPtr(team.Age),
+		PlayerCount: intPtr(team.PlayerCount),
+		Points:      intPtr(team.Points),
+	}
+
+	json.NewEncoder(w).Encode(resp)
+
+}
 // Helper Func 
 
 func intPtr(i int) *int {

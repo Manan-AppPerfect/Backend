@@ -26,9 +26,9 @@ func NewService(
 	}
 }
 
-func (s *Service) CreateTeam(ctx context.Context, id int64, name string, age int) (*models.Team, error){
+func (s *Service) CreateTeam(ctx context.Context, name string, age, playerCount, points int) (*models.Team, error){
 
-	user, err := s.userGateway.GetUser(ctx, 1)
+	user, err := s.userGateway.GetUser(ctx, 2)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +44,10 @@ func (s *Service) CreateTeam(ctx context.Context, id int64, name string, age int
 	}
 
 	team := &models.Team{
-		ID: id,
 		Name: name,
 		Age: age,
+		PlayerCount: playerCount,
+		Points: points,
 	}
 
 	if err := s.repo.Create(ctx, team); err != nil{
@@ -56,13 +57,21 @@ func (s *Service) CreateTeam(ctx context.Context, id int64, name string, age int
 	return team, nil
 }
 
+func (s *Service) GetTeamByID(ctx context.Context, id int64) (*models.Team, error) {
+	return s.repo.GetByID(ctx, id)
+}
+
 func (s *Service) AddPlayers(ctx context.Context, id int64, count int) error {
 	team, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
-	
-	return team.AddPlayerCount(count)
+
+	if err := team.AddPlayerCount(count); err != nil {
+		return err
+	}
+
+	return s.repo.Update(ctx, id, team)
 }
 
 func (s *Service) AddPoints(ctx context.Context, id int64, count int) error {
@@ -70,6 +79,10 @@ func (s *Service) AddPoints(ctx context.Context, id int64, count int) error {
 	if err != nil {
 		return err
 	}
-	
-	return team.AddPoints(count)
+
+	if err := team.AddPoints(count); err != nil {
+		return err
+	}
+
+	return s.repo.Update(ctx, id, team)
 }

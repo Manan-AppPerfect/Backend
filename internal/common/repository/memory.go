@@ -1,5 +1,8 @@
 package repository
 
+
+//For testing without database
+
 import (
 	"context"
 	"errors"
@@ -19,7 +22,7 @@ func NewMemoryRepository[T any]() Repository[T] {
 	}
 }
 
-func (r *MemoryRepo[T]) Create(ctx context.Context, entity*T) error {
+func (r *MemoryRepo[T]) Create(ctx context.Context, entity *T) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -41,7 +44,7 @@ func (r *MemoryRepo[T]) GetByID(ctx context.Context, id int64) (*T, error) {
 	return entity, nil
 }
 
-func (r *MemoryRepo[T]) Update(ctx context.Context, id int64, entity*T) error {
+func (r *MemoryRepo[T]) Update(ctx context.Context, id int64, entity *T) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
