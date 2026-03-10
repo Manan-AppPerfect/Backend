@@ -1,0 +1,3 @@
+databaseChangeLog:
+  - include:
+      file: schema/migrations/001_create_teams_table.sql

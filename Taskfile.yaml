@@ -1,0 +1,20 @@
+version: "3"
+
+tasks: 
+
+  run:
+    desc: Run the application
+    cmds:
+      - go run cmd/main.go
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./...
+
+  generate: 
+    desc: Generate code
+    cmds:
+      - go generate ./...
+
+  

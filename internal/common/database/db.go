@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Manan-AppPerfect/Backend/internal/models"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,12 +26,6 @@ func NewDB() (*gorm.DB, error) {
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-
-	// Auto Migrate Models
-	err = db.AutoMigrate(&models.Team{})
 	if err != nil {
 		return nil, err
 	}
