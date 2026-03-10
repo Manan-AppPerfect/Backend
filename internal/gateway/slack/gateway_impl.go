@@ -13,5 +13,5 @@ func NewGateway(client *Client) Gateway {
 }
 
 func (g *GatewayImpl) SendMessage(ctx context.Context, message string) error {
-	return g.client.SendMessage(ctx, message)
+	return nil
 }

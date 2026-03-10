@@ -9,8 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
-
 func NewDB() (*gorm.DB, error) {
 
 	err := godotenv.Load()
